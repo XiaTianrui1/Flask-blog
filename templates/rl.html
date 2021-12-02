@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>User register</title>
+    <meta charset="UTF-8">
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'dist/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css.css')}}">
+    <script type="text/javascript">
+    $(function() {
+        $('#usr').blur(function () {
+            var username = $(this).val();
+            var span_ele = $(this).next('span');
+            // 验证用户名是否以字母开头
+            if (!((username[0]>='a'&&username[0]<='z')||(username[0]>='A'&&username[0]<='Z'))){
+                span_ele.css({"color": "#e33535", "font-size": "14px", "font-weight":"bold"});
+                span_ele.text('Username should start with a letter!')
+            }
+            // 验证用户名长度
+            else if(username.length<6 || username.length>15){
+                span_ele.css({"color": "#e33535", "font-size": "14px", "font-weight":"bold"});
+                span_ele.text('The length of the username should be 6-15!')
+            }
+            else{
+                // ajax 验证用户名是否已存在
+                span_ele.text('')
+                $.get('{{ url_for('user.check_username') }}', {username: username}, function (data) {
+                    console.log(data);
+                    if (data.code != 200) {
+                        span_ele.css({"color": "#e33535", "font-size": "14px", "font-weight":"bold"});
+                        span_ele.text(data.msg)
+                    } else {
+                        span_ele.css({"color": "#2baf2b", "font-size": "14px","font-weight":"bold"});
+                        span_ele.text(data.msg)
+                    }
+                })
+            }
+        })
+        $('#email').blur(function (){
+            var email = $(this).val();
+            var span_ele = $(this).next('span');
+            // 验证邮箱格式
+            if (!isEmail(email)){
+                span_ele.css({"color": "#e33535", "font-size": "14px", "font-weight":"bold"});
+                span_ele.text('The format is not correct!')
+            }else{
+                // ajax 验证邮箱是否已存在
+                span_ele.text('')
+                $.get('{{ url_for('user.check_email') }}', {email: email}, function (data) {
+                    console.log(data);
+                    if (data.code != 200) {
+                        span_ele.css({"color": "#e33535", "font-size": "14px", "font-weight":"bold"});
+                        span_ele.text(data.msg)
+                    } else {
+                        span_ele.css({"color": "#2baf2b", "font-size": "14px","font-weight":"bold"});
+                        span_ele.text(data.msg)
+                    }
+                })
+            }
+        })
+    })
+    function isEmail(email){
+        // 正则表达式验证邮箱格式
+        var myreg = /^([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+@([a-zA-Z0-9]+[_|\_|\.]?)*[a-zA-Z0-9]+\.[a-zA-Z]{2,3}$/;
+        return myreg.test(email);
+    }
+    function inputpassword() {
+        var password=$("#pwd").val();
+        var tip1=$("#tip1");
+        var tip_1=$("#tip_1");
+        if(password.length<8)
+        {
+            $("#pwd").next().css("display","none");
+            tip1.css("display","block");
+            tip_1.html("The length of the password should be greater than 8!");
+        }
+        else{
+            tip1.css("display","none");
+            $("#pwd").next().css("display","block");
+        }
+    }
+    function isEmpty() {
+        // 判断是否每一项都填写
+        if($("#usr").val()==""||$("#pwd").val()=="" ||$("#email").val()==""||$("#confirm_pwd").val()=="")
+        {
+            alert("Please fill in the information completely!");
+            return false;
+        }
+        return true;
+    }
+    </script>
+</head>
+<body class = "login1" >
+<div class="row">
+    <div id="container2" class="col-md-4 col-md-offset-4">
+        <h1>Register for the Bobo Blog</h1>
+    </div>
+<div id="container1" class="col-md-6 col-md-offset-3">
+    <form class="form-horizontal" role="form" id ='form1' method="POST" action="{{ url_for('user.register') }}">
+        <div class="form-group">
+            <label for="firstname" class="col-sm-2 col-sm-offset-1 control-label">Username</label>
+            <div class="col-sm-6">
+                <input type="text" class="form-control" id="usr" name="username" placeholder="Username"><span></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="lastname" class="col-sm-2 col-sm-offset-1 control-label">Password</label>
+            <div class="col-sm-6">
+                <input type="password" class="form-control" id = 'pwd' name='password' placeholder="Password" required="" oninput="inputpassword()">
+                <div class="righttip"></div>
+                <div class="tip" id="tip1">
+                    <div id="tip_1" class="tipmessage"></div>
+                </div>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="lastname" class="col-sm-2 col-sm-offset-1 control-label">Confirm password</label>
+            <div class="col-sm-6">
+                <input type="password" class="form-control" id = 'confirm_pwd' name='confirm_password' placeholder="Confirm Password" required="" oninput="inputpassword()">
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="lastname" class="col-sm-2 col-sm-offset-1 control-label">Email</label>
+            <div class="col-sm-6">
+                <input type="email" class="form-control" id="email" name="email" placeholder="Email"><span></span>
+            </div>
+        </div>
+        <div class="form-group">
+            <label for="lastname" class="col-sm-2 col-sm-offset-1 control-label">Gender</label>
+            <div class="col-sm-6">
+                <select class="form-control" name="gender">
+                    <option>Male</option>
+                    <option>Female</option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row button-login">
+            <button type="submit" class="btn btn-login" onclick="return isEmpty()">Sign Up</button>
+        </div>
+    </form>
+</div>
+    {%  for message in get_flashed_messages() %}
+        {% if message=='This username is already been used!' %}
+            <container id ='container3' class="col-md-4 col-md-offset-4">
+                <p id="message1">{{ message }}</p>
+            </container>
+        {% endif %}
+        {% if message=='The username should be started with a letter!' %}
+            <container id ='container3' class="col-md-4 col-md-offset-4">
+                <p id="message1">{{ message }}</p>
+            </container>
+        {% endif %}
+        {% if message=='The length of the password must be larger than 7!' %}
+            <container id ='container3' class="col-md-4 col-md-offset-4">
+                <p id="message1">{{ message }}</p>
+            </container>
+        {% endif %}
+        {% if message=='The email is not in the correct format!' %}
+            <container id ='container3' class="col-md-4 col-md-offset-4">
+                <p id="message1">{{ message }}</p>
+            </container>
+        {% endif %}
+        {% if message=='The length of the username must be 6-15!' %}
+            <container id ='container3' class="col-md-4 col-md-offset-4">
+                <p id="message1">{{ message }}</p>
+            </container>
+        {% endif %}
+        {% if message=='This email is already been used!' %}
+            <container id ='container3' class="col-md-4 col-md-offset-4">
+                <p id="message1">{{ message }}</p>
+            </container>
+        {% endif %}
+        {% if message=='Successful register!' %}
+            <container id ='container3' class="col-md-4 col-md-offset-4">
+                <p id="message2">{{ message }}</p>
+                <p id="message3"><a href="login" style="color: white; width: 250px">Click to login>></a></p>
+            </container>
+        {% endif %}
+        {% if message=='Two password entries are inconsistent!' %}
+            <container id ='container3' class="col-md-4 col-md-offset-4">
+                <p id="message1">{{ message }}</p>
+            </container>
+        {% endif %}
+    {% endfor %}
+</div>
+</body>
+</html>

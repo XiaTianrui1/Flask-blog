@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>User login</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'dist/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css.css')}}">
+    <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdn.staticfile.org/popper.js/1.15.0/umd/popper.min.js"></script>
+    <script type="text/javascript" href="{{ url_for('static', filename='js.js')}}"></script>
+    <script type="text/javascript">
+    $(function() {
+            $('#user').blur(function () {
+                var username = $(this).val();
+                var span_ele = $(this).next('span');
+                if (username.length == 0){
+                    span_ele.css({"color": "#e33535", "font-size": "14px", "font-weight":"bold"});
+                    span_ele.text('Username should not be empty!')
+                }
+            })
+            $('#password').blur(function () {
+                var password = $(this).val();
+                var span_ele = $(this).next('span');
+                if (password.length == 0){
+                    span_ele.css({"color": "#e33535", "font-size": "14px", "font-weight":"bold"});
+                    span_ele.text('Password should not be empty!')
+                }
+            })
+        })
+    function isEmpty() {
+        // 判断是否每一项都填写
+        if($("#user").val()==""||$("#password").val()=="")
+        {
+            alert("Please fill in the information completely!");
+            return false;
+        }
+        else{
+            alert("Warning: The browser will save your cookie information!")
+           return true;
+        }
+
+    }
+    </script>
+</head>
+<body class = "login1" >
+<div class="row">
+    <div id="container2" class="col-md-4 col-md-offset-4">
+        <h1>Login the Bobo Blog</h1>
+    </div>
+<div id="container1" class="col-md-6 col-md-offset-3">
+<form class="form-horizontal" role="form" id ='form1' method="POST" action="{{ url_for('user.login') }}">
+  <div class="form-group">
+    <label for="firstname" class="col-sm-2 col-sm-offset-1 control-label">Username</label>
+    <div class="col-sm-6">
+        <input type="text" class="form-control" id="user" name="username" placeholder="Username"><span></span>
+        <div class="righttip"></div>
+        <div class="tip" id="tip1">
+            <div class="tipicon"></div>
+            <div id="tip_1" class="tipmessage"></div>
+        </div>
+    </div>
+  </div>
+    <div class="form-group">
+        <label for="lastname" class="col-sm-2 col-sm-offset-1 control-label">Password</label>
+        <div class="col-sm-6">
+            <input type="password" class="form-control" id = 'password' name='password' placeholder="Password" required=""><span></span>
+            <div class="righttip"></div>
+            <div class="tip" id="tip2">
+                <div class="tipicon"></div>
+                <div id="tip_2" class="tipmessage"></div>
+            </div>
+        </div>
+    </div>
+    <div class="form-row button-login">
+        <button type="submit" class="btn btn-login" onclick="return isEmpty()">Sign In</button>
+    </div>
+</form>
+</div>
+    {%  for message in get_flashed_messages() %}
+        {% if message=='The password is incorrect!' %}
+            <container id ='container3' class="col-md-4 col-md-offset-4">
+                <p id="message1">{{ message }}</p>
+            </container>
+        {% endif %}
+        {% if message=="This username doesn't exit!" %}
+            <container id ='container3' class="col-md-4 col-md-offset-4">
+                <p id="message1">{{ message }}</p>
+            </container>
+        {% endif %}
+    {% endfor %}
+</div>
+</body>
+</html>

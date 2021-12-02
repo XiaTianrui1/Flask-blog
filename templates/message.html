@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+    <title>Message board</title>
+    {% endblock %}
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'dist/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css.css')}}">
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script>
+    $(function() {
+        $('#ta1').blur(function () {
+            var text = $(this).val();
+            var span_ele = $(this).next('span');
+            // 验证message是否为空
+            if (text.length == 0) {
+                span_ele.css({"color": "#e33535", "font-size": "14px", "font-weight": "bold"});
+                span_ele.text('The content should not be empty!')
+            }
+        })
+    })
+</script>
+{% block script %}
+{% endblock %}
+</head>
+{% block body %}
+<body id="body1">
+{% endblock %}
+<nav class="navbar navbar-default navbar-fixed-top" id="nav1" role="navigation">
+    <div class="container-fluid">
+    <div class="navbar-header">
+        <a class="navbar-brand" href="#">Blog</a>
+    </div>
+    <div>
+        <ul class="nav navbar-nav">
+            <li><a href="{{ url_for('articles.home') }}">Home</a></li>
+             <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    Classification<b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('articles.cs') }}">CS learning experience</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ url_for('articles.rn') }}">Reading notes</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ url_for('articles.ho') }}">Hobbies</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ url_for('articles.dl') }}">Daily life</a></li>
+                </ul>
+            </li>
+            <li><a href="{{ url_for('user.aboutme') }}">About me</a></li>
+            <li><a href="{{ url_for('user.message') }}">Message Board</a></li>
+        </ul>
+    </div>
+
+        <ul class="nav navbar-nav navbar-right">
+            {% if user %}
+                <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    Welcome! {{ user.username }} <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('user.center') }}">User home page</a></li>
+                    <li><a href="{{ url_for('user.logout')}}">exit</a></li>
+                </ul>
+            </li>
+            {% else %}
+                <li><a href="rl"><span class="glyphicon glyphicon-user"></span>Register</a></li>
+                <li><a href="login"><span class="glyphicon glyphicon-user"></span>Login</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+<div class="container" id="background">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4"></div>
+                <div class="col-md-8" id="head_word">
+                    {% block h1 %}
+                    <H1 style="font-weight: bold">  Message Board </H1>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+</div>
+{%  for message in get_flashed_messages() %}
+        {% if message=='Successfully released your message!' %}
+            <div id ='container7' style="margin-left: 430px">
+                <p id="message4">{{ message }}</p>
+            </div>
+        {% endif %}
+        {% if message=='Successfully delete the message!' %}
+            <div id ='container7' style="margin-left: 430px">
+                <p id="message4">{{ message }}</p>
+            </div>
+        {% endif %}
+{% endfor %}
+<form role="form" style="margin-top: 40px" action="{{ url_for('user.message') }}" method="POST">
+                <label for="name" style="padding-top: 0px;margin-left: 240px; width: 1000px;font-size: 20px;font-weight: bold">Leave your message:</label>
+                <textarea name='message' class="form-control" id="ta1" placeholder="Please enter your message"></textarea><span style="margin-left: 240px"></span>
+                {%  for message in get_flashed_messages() %}
+        {% if message=='The submitted message can not be empty!' %}
+            <span id ='container3' style="margin-top: 15px"class="col-md-4 col-md-offset-4">
+                <p id="message1">{{ message }}</p>
+            </span>
+        {% endif %}
+{% endfor %}
+    <div class="form-row button-login">
+                    <button type="submit" class="btn btn-login" style="font-size: 13px;margin-top: 10px; margin-right: 200px" >Submit</button>
+                </div>
+        </form>
+
+
+<hr style="border-top: 2px solid white">
+<p style="padding-left: 240px;font-size: 20px;font-weight: bold">Messages:</p>
+<div id="container5" style="margin-bottom: 40px;border: 3px solid rgba(186,120,196,0.63)">
+        {% if pagination.items %}
+            {% for message in pagination.items %}
+                <div>
+                <p id="user_comment">
+                    {% if not message.user_id %}
+                        <span id="username">Anonymous user</span>
+                    {% else %}
+                    <span id="username">{{ message.user.username }}</span>
+                    {% endif %}
+                </p>
+                <p id="comment1">
+                    {{ message.content }}
+                </p>
+                    <p style="margin-left: 850px;width: 300px"><span id="comment">released at :{{ message.time }}</span></p>
+                </div>
+                {% if user.username == 'administrator' or message.user.username == user.username %}
+                    <p class="read"><a href="{{ url_for('user.delete_message') }}?mid={{ message.message_id }}&?uname={{ user.username}}" class="btn-3d purple" >Delete</a></p>
+                {% endif %}
+                <hr style="width: 1060px;margin-left: 10px;border-top: 2px solid">
+                {% endfor %}
+            {% else %}
+            <div id="div3">There are currently no messages!</div>
+        {% endif %}
+        </div>
+<nav aria-label="Page navigation" class="col-md-4 col-md-offset-4">
+    <ul class="pagination">
+	<li {% if not pagination.has_prev %}class="disabled"{% endif %}><a href="{{ url_for('user.message') }}?page={{ pagination.prev_num }}">&laquo;</a></li>
+        {% for page_num in range(1, pagination.pages + 1 )%}
+            <li {% if pagination.page == page_num %} class="active"{% endif %}><a href="{{ url_for('user.message') }}?page={{ page_num }}">{{ page_num }}</a></li>
+        {% endfor %}
+	<li {% if not pagination.has_next %}class="disabled"{% endif %}><a href="{{ url_for('user.message') }}?page={{ pagination.next_num }}">&raquo;</a></li>
+</ul><br>
+    </nav>
+
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+    <title>Detail</title>
+    {% endblock %}
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'dist/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css.css')}}">
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../static/tinymce/tinymce.min.js"></script>
+    <script>
+        $(document).ready(function (){
+            $.get('{{ url_for('articles.click') }}', {article_id:{{article.article_id}}},function(data){
+                document.getElementById('click').text(data.uclick);
+            })
+        })
+        $(function() {
+            $('.glyphicon-thumbs-up').click(function () {
+                var $this = $(this);
+                var flag = $this.next('span').attr('flag');
+                $.get('{{ url_for('articles.like') }}', {
+                    article_id:{{article.article_id}},
+                    flag: flag
+                }, function (data) {
+                    $this.next('span').text(data.like);
+                });
+                if (flag == 1) {
+                    $this.css({'color': 'black'})
+                    $this.next('span').attr('flag', 0)
+                } else {
+                    $this.css({'color': 'red'})
+                    $this.next('span').attr('flag', 1)
+                }
+            })
+        })
+            $(function() {
+            $('#save1').click(function () {
+                var $this = $(this);
+                var flag = $this.next('span').attr('flag');
+                $.get('{{ url_for('articles.save') }}', {
+                    article_id:{{article.article_id}},
+                    flag: flag
+                }, function (data) {
+                    $this.next('span').text(data.saves);
+                });
+                if (flag == 1) {
+                    $this.css({'color': 'yellow'})
+                    $this.next('span').attr('flag', 0)
+                } else {
+                    $this.css({'color': 'red'})
+                    $this.next('span').attr('flag', 1)
+                }
+            })
+        })
+        // 判断评论框里的内容是否为空
+        $(function() {
+        $('#ta2').blur(function () {
+            var text = $(this).val();
+            var span_ele = $(this).next('span');
+            // 验证comment是否为空
+            if (text.length == 0) {
+                span_ele.css({"color": "#e33535", "font-size": "14px", "font-weight": "bold"});
+                span_ele.text('The content should not be empty!')
+            }
+        })
+    })
+    </script>
+</head>
+<body id="body1">
+<nav class="navbar navbar-default navbar-fixed-top" id="nav1" role="navigation">
+    <div class="container-fluid">
+    <div class="navbar-header">
+        <a class="navbar-brand" href="#">Blog</a>
+    </div>
+    <div>
+        <ul class="nav navbar-nav">
+            <li><a href="{{ url_for('articles.home') }}">Home</a></li>
+             <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    Classification<b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('articles.cs') }}">CS learning experience</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ url_for('articles.rn') }}">Reading notes</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ url_for('articles.ho') }}">Hobbies</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ url_for('articles.dl') }}">Daily life</a></li>
+                </ul>
+            </li>
+            <li><a href="{{ url_for('user.aboutme') }}">About me</a></li>
+            <li><a href="{{ url_for('user.message') }}">Message Board</a></li>
+        </ul>
+    </div>
+        <ul class="nav navbar-nav navbar-right">
+            {% if user %}
+                <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    Welcome! {{ user.username }} <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('user.center') }}">User home page</a></li>
+                    <li><a href="{{ url_for('user.logout')}}">exit</a></li>
+                </ul>
+            </li>
+            {% else %}
+                <li><a href="rl"><span class="glyphicon glyphicon-user"></span>Register</a></li>
+                <li><a href="login"><span class="glyphicon glyphicon-user"></span>Login</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+<div class="container" id="background">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-1"></div>
+                <div class="col-md-9" id="head_word">
+                    <H1 style="text-align: center;font-size: 24px;font-weight: bold">{{ article.title }}</H1>
+                </div>
+            </div>
+        </div>
+</div>
+{%  for message in get_flashed_messages() %}
+        {% if message=='Successfully released your comment!' %}
+            <div id ='container7' style="margin-left: 430px">
+                <p id="message4">{{ message }}</p>
+            </div>
+        {% endif %}
+        {% if message=='Successfully delete the comment!' %}
+            <div id ='container7' style="margin-left: 430px">
+                <p id="message4">{{ message }}</p>
+            </div>
+        {% endif %}
+{% endfor %}
+    <div id="container5" class="col-md-8 col-md-offset-2">
+        <div id="detail">
+            <div id="div1" class=" col-md-4">
+            <p>文章类型：{{ article.type }}</p>
+            <p>发布时间：{{ article.time }}</p>
+                <hr style="border: 2px solid;color: #6b6868;padding-left: 10px">
+            </div>
+            <div id="div2">
+                {{ article.content | safe }}
+            </div>
+            <div style="float: right;">
+                <p id="p1"><span class="glyphicon glyphicon-eye-open" style="color: rgb(0, 0, 0);"></span>&nbsp;&nbsp;<span id="click">{{ article.click }} </span>
+                    {% if user %}
+                        {% if flag == 1 %}
+                                <span class="glyphicon glyphicon-star-empty" style="color: red" ></span>&nbsp;&nbsp;<span flag="0">{{ article.save }}</span>
+                        {% else %}
+                            <span class="glyphicon glyphicon-star-empty" style="color: yellow" id="save1"></span>&nbsp;&nbsp;<span flag="0">{{ article.save }}</span>
+                        {% endif %}
+                    {% endif %}
+                    <span class="glyphicon glyphicon-thumbs-up" style="color: rgb(0, 0, 0);"></span><span flag="0">{{ article.like }}</span></p>
+            </div>
+        </div>
+    </div>
+        <form role="form" style="margin-top: 40px" action="{{ url_for('articles.add_comment') }}" method="POST">
+            <input type="hidden" name="aid" value="{{ article.article_id }}">
+                <label for="name" style="padding-top: 28px;margin-left: 240px; width: 1000px;font-size: 20px;font-weight: bold">Add comment:</label>
+            <textarea name='comment' class="form-control" id="ta2" placeholder="Please enter your comments"></textarea><span style="padding-left: 240px"></span>
+            {%  for message in get_flashed_messages() %}
+        {% if message=='The submitted comment can not be empty!' %}
+            <span id ='container3' style="margin-top: 15px"class="col-md-4 col-md-offset-4">
+                <p id="message1">{{ message }}</p>
+            </span>
+        {% endif %}
+{% endfor %}
+                <div class="form-row button-login">
+                    <button type="submit" class="btn btn-login" style="font-size: 13px;margin-top: 10px" >Add comment</button>
+                </div>
+        </form>
+{#       <hr style="width: 1080px; margin-left:240px;border: 2px solid ">#}
+        <p style="padding-left: 240px;font-size: 20px;font-weight: bold">Comments:</p>
+        <div id="container5" style="margin-bottom: 40px;border: 3px solid rgba(186,120,196,0.63)">
+        {% if pagination.items %}
+            {% for comment in pagination.items %}
+                <div>
+                <p id="user_comment"><span id="username">{{ comment.user.username }}</span>
+                </p>
+                <p id="comment1">
+                    {{ comment.comment }}
+                </p>
+                    <p style="margin-left: 850px;width: 300px"><span id="comment">released at :{{ comment.comment_time }}</span></p>
+                </div>
+                {% if user%}
+                    {% if user.username == 'administrator' or comment.user.username == user.username  %}
+                    <p class="read"><a href="{{ url_for('user.delete_comment') }}?cid={{ comment.comment_id }}&aid={{ article.article_id }}&uname={{ user.username }}" class="btn-3d purple" >Delete</a></p>
+                {% endif %}
+                    {% endif %}
+                <hr style="width: 1060px;margin-left: 10px;border-top: 2px solid">
+                {% endfor %}
+            <nav aria-label="Page navigation" class="col-md-4 col-md-offset-4">
+    <ul class="pagination">
+	<li {% if not pagination.has_prev %}class="disabled"{% endif %}><a href="{{ url_for('articles.detail') }}?page={{ pagination.prev_num }}&aid={{ article.article_id }}">&laquo;</a></li>
+        {% for page_num in range(1, pagination.pages + 1 )%}
+            <li {% if pagination.page == page_num %} class="active"{% endif %}><a href="{{ url_for('articles.detail') }}?page={{ page_num }}&aid={{ article.article_id }}">{{ page_num }}</a></li>
+        {% endfor %}
+	<li {% if not pagination.has_next %}class="disabled"{% endif %}><a href="{{ url_for('articles.detail') }}?page={{ pagination.next_num }}&aid={{ article.article_id }}">&raquo;</a></li>
+</ul><br>
+    </nav>
+            {% else %}
+            <div id="div3">There are no comments on this blog!</div>
+        {% endif %}
+        </div>
+
+                </div>
+
+
+
+</body>
+</html>

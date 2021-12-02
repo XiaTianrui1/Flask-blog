@@ -1,0 +1,62 @@
+{% extends 'admin.html' %}
+{% block script %}
+{% endblock %}
+{% block p1 %}
+    <article style="width: 1250px">
+    {%  for message in get_flashed_messages() %}
+        {% if message=='Successfully removed the blog from my favorites!' %}
+            <div id ='container7'>
+                <p id="message4">{{ message }}</p>
+            </div>
+        {% endif %}
+    {% endfor %}
+<div class="blog">
+<h3 ><p>My favorites</p></h3>
+{% endblock %}
+{% block middle %}
+    {% if pagination.items %}
+     {% for save in pagination.items %}
+         <div class="bloglist" id="divblog">
+     <li>
+      <h3 id="title" style="margin-bottom: 7px"><a href="{{ url_for('articles.detail') }}?aid={{ save.article.article_id }}">{{ save.article.title }}</a></h3>
+         <p >Classification: {{ save.article.type }}</p>
+      <p style="font-size: 15px;margin-top: 20px">{{ save.article.content[0:600]|safe}}</p>
+         <p class="read"><a href="{{ url_for('articles.delete_save') }}?aid={{ save.article_id }}&uid={{ g.user.user_id }}" class="btn-3d purple" >Delete</a></p>
+    </li>
+         </div>
+     {% endfor %}
+        {% else %}
+
+    {% endif %}
+    <nav aria-label="Page navigation" class="col-md-4 col-md-offset-4" style="height: 65px">
+        <ul class="pagination">
+            <li {% if not pagination.has_prev %}class="disabled"{% endif %}><a href="{{ url_for('articles.save') }}?page={{ pagination.prev_num }}">&laquo;</a></li>
+            {% for page_num in range(1, pagination.pages + 1 )%}
+                <li {% if pagination.page == page_num %} class="active"{% endif %}><a href="{{ url_for('articles.save') }}?page={{ page_num }}">{{ page_num }}</a></li>
+            {% endfor %}
+            <li {% if not pagination.has_next %}class="disabled"{% endif %}><a href="{{ url_for('articles.save') }}?page={{ pagination.next_num }}">&raquo;</a></li>
+        </ul><br>
+    </nav>
+    </div>
+{% endblock %}
+{% block add %}
+{% endblock %}
+{% block information %}
+<aside style="width: 280px">
+    <div class="vcard">
+    <img src="../static/img15.png" class="about" style="margin-left: 23px">
+        <p id="info" style="margin-left: 23px">Personal information:</p>
+      <p class="fn" style="margin-left: 23px">Username: {{ g.user.username }}</p>
+        {% if g.user.gender == '1' %}
+      <p class="fn" style="margin-left: 23px">Gender: Male</p>
+        {% else %}
+        <p class="fn" style="margin-left: 23px">Gender: Female</p>
+        {% endif %}
+      <p class="nickname" style="margin-left: 23px">Email: {{ g.user.email }}</p>
+</div>
+</aside>
+</div>
+</article>
+{% endblock %}
+</body>
+</html>

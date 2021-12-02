@@ -1,0 +1,113 @@
+{% extends 'base.html' %}
+{% block title %}
+<title>About me</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+{% endblock %}
+{% block script %}
+    <script type="text/javascript" src="https://api.map.baidu.com/api?v=1.0&type=webgl&ak=GDIYQhrxWC9yLaFCAy2mjNvAGDDuGQ4Z"></script>
+
+{% endblock %}
+{% block body %}
+<body  id="body1">
+{% endblock %}
+{% block search %}
+{% endblock %}
+{% block h1 %}
+    <H1 style="font-weight: bold">  About me </H1>
+{% endblock %}
+{% block middle %}
+    <article id="article">
+<aside id="l_box1">
+<div>
+    <h2>My Introduction</h2>
+    <p>Hello everyone, my name is Xia Tinrui, and welcome to my personal blog! I am a junior at Southwest Jiaotong University. I live in Chengdu, Sichuan, and I am currently studying computer science. My purpose of making this blog is mainly to record and share my life. I will post some of my daily life and learning experiences here, and I will also share some book reviews and film reviews. I usually like to grow plants, read books, watch movies, and also like pets, swimming, etc., so I may publish a lot of blogs about these hobbies. If you have the same hobbies, please check it out! We can communicate with each other and look forward to becoming friends with you. I hope that my sharing can be seen by more people through this blog, so as to make more like-minded friends. If you like the content I share, you can add them to your favorites, so that you can find them quickly in the future. If you have anything to say to me or have any suggestions for my blog, please leave a message on my message board!</p>
+</div>
+    <div>
+        <p>I'm currently studying at Southwest Jiaotong University in Chengdu, Sichuan.
+            The detailed address is: Xipu Campus, Southwest Jiaotong University, No. 999 Xi'an Road, Pidu District, Chengdu City, Sichuan Province. The position is shown in the map below:</p>
+    <div id="status" style="text-align: center"></div>
+        <div id="map_container" style="width: 600px;height: 600px;margin-left: 50px"></div>
+    </div>
+{#    <script type="text/javascript">#}
+{#var map = new BMapGL.Map("map_container");#}
+{#	var point = new BMapGL.Point(103.993873, 30.768892);#}
+{#	map.centerAndZoom(point, 14);#}
+{##}
+{#	var marker = new BMapGL.Marker(point);  // 创建标注#}
+{#	map.addOverlay(marker);              // 将标注添加到地图中#}
+{##}
+{##}
+{##}
+<script type="text/javascript">
+
+    window.onload = function() {
+        if(navigator.geolocation) {
+            document.getElementById("status").innerHTML = "HTML5 Geolocation is supported in your browser.";
+                // 百度地图API功能
+                var map = new BMapGL.Map("map_container");
+                var point = new BMapGL.Point(116.331398,39.897445);
+                map.centerAndZoom(point,12);
+
+                var geolocation = new BMapGL.Geolocation();
+                geolocation.getCurrentPosition(function(r){
+                    if(this.getStatus() == BMAP_STATUS_SUCCESS){
+                        var mk = new BMapGL.Marker(r.point);
+                        map.addOverlay(mk);
+                        map.panTo(r.point);
+                        alert('您的位置：'+r.point.lng+','+r.point.lat);
+                    }
+                    else {
+                        alert('failed'+this.getStatus());
+                    }
+                    },{enableHighAccuracy: true})
+        }
+    };
+
+</script>
+{#</script>#}
+</aside>
+<aside id="r_box2">
+ <div class="about_me">
+        <h2>About me</h2>
+        <ul>
+          <i><img src="../static/img9.JPG"></i>
+          <p><b>Xia Tianrui</b></p>
+            <p style="padding-bottom: 25px">Currently studying at Southwest Jiaotong University Leeds-joint school, and now a junior student majoring in computer since. My hobbies include watching movies, reading books, and watching tennis matches and so on. I would share my experiences about my studying, interest, and life in this blog and we could exchange our ideas. If you like the content I share, please give me a like and add it to your favorites!</p>
+        </ul>
+      </div>
+{#<div style="background-color: whitesmoke">#}
+    <container style="background-color: rgba(245,245,245,0.7)">
+    <h2>My photos</h2>
+    <img src="../static/img10.JPG">
+    <img src="../static/img9.JPG">
+    <img src="../static/img1.JPG">
+    <img src="../static/img2.JPG">
+    <img src="../static/img3.JPG">
+    <img src="../static/img4.JPG">
+    <img src="../static/img5.JPG">
+    <img src="../static/img6.JPG">
+    <img src="../static/img6.JPG">
+        </container>
+
+
+{#</div>#}
+    <div>
+        <p style="padding-top: 330px">My QQ number is: 1085290787</p>
+        <p>My wechat number is:xtr23333333__</p>
+        <p>This is my WeChat QR code:</p>
+        <img style="width: 200px;height: 230px ;margin-left: 60px;padding-bottom: 30px;margin-top:20px" src="../static/img16.png">
+    </div>
+{#    <script type="text/javascript">#}
+{#var map = new BMapGL.Map("map_container");#}
+{#	var point = new BMapGL.Point(103.993873, 30.768892);#}
+{#	map.centerAndZoom(point, 14);#}
+{##}
+{#	var marker = new BMapGL.Marker(point);  // 创建标注#}
+{#	map.addOverlay(marker);              // 将标注添加到地图中#}
+
+
+{#</script>#}
+</aside>
+    </article>
+{% endblock %}

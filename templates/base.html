@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+    <title>Home</title>
+    {% endblock %}
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'dist/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css.css')}}">
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+{% block script %}
+{% endblock %}
+</head>
+{% block body %}
+<body id="body1">
+{% endblock %}
+<nav class="navbar navbar-default navbar-fixed-top" id="nav1" role="navigation">
+    <div class="container-fluid">
+    <div class="navbar-header">
+        <a class="navbar-brand" href="#">Blog</a>
+    </div>
+    <div>
+        <ul class="nav navbar-nav">
+            <li><a href="{{ url_for('articles.home') }}">Home</a></li>
+             <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    Classification<b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('articles.cs') }}">CS learning experience</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ url_for('articles.rn') }}">Reading notes</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ url_for('articles.ho') }}">Hobbies</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ url_for('articles.dl') }}">Daily life</a></li>
+                </ul>
+            </li>
+            <li><a href="{{ url_for('user.aboutme') }}">About me</a></li>
+        <li><a href="{{ url_for('user.message') }}">Message Board</a></li>
+            <li>
+                {% block search %}
+            <div id="search" style="margin-top: 8px; margin-left: 30px; width: 350px">
+        <form action="{{ url_for('articles.search') }}" method="post" name="searchform" id="searchform">
+          <input name="keyboard" id="keyboard" class="input_text" value="Enter keyword to search" style="color: rgb(153, 153, 153);" onfocus="if(value=='Enter keyword to search'){this.style.color='#000';value=''}" onblur="if(value==''){this.style.color='#999';value='Enter keyword to search'}" type="text">
+          <input name="show" value="title" type="hidden">
+          <input name="tempid" value="1" type="hidden">
+          <input name="tbname" value="news" type="hidden">
+          <input name="Submit" class="input_submit" value="Search" type="submit">
+        </form>
+                    </div>
+                {% endblock %}
+            </li>
+        </ul>
+    </div>
+
+        <ul class="nav navbar-nav navbar-right">
+            {% if user %}
+                <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    Welcome! {{ user.username }} <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('user.center') }}">User home page</a></li>
+                    <li><a href="{{ url_for('user.logout')}}">exit</a></li>
+                </ul>
+            </li>
+            {% else %}
+                <li><a href="rl"><span class="glyphicon glyphicon-user"></span>Register</a></li>
+                <li><a href="login"><span class="glyphicon glyphicon-user"></span>Login</a></li>
+            {% endif %}
+        </ul>
+    </div>
+</nav>
+<div class="container" id="background">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4"></div>
+                <div class="col-md-8" id="head_word">
+                    {% block h1 %}
+                    <H1 style="font-weight: bold">  BoBo Blog </H1>
+                    {% endblock %}
+                </div>
+            </div>
+        </div>
+</div>
+{% block middle %}
+{% endblock %}
+
+
+</body>
+</html>

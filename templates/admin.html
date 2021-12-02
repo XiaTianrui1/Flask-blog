@@ -1,0 +1,190 @@
+{% block head %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+    <title>User center</title>
+    {% endblock %}
+    <script src="https://cdn.staticfile.org/jquery/2.1.1/jquery.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'dist/css/bootstrap.min.css')}}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename = 'css.css')}}">
+	<script src="https://cdn.staticfile.org/twitter-bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="../static/tinymce/tinymce.min.js"></script>
+{% block script %}
+    <script type="text/javascript">
+        $(function (){
+            tinymce.init({
+                selector: '#article_content',
+                height:400,
+                width:800,
+                plugins: "quickbars advlist list",
+                toolbar:true,
+                menubar:true
+            });
+            $('#delete').click(function () {
+                var aid = $('#input').text();
+                var div_ele = $('#divblog');
+                // 发送ajax请求 删除blog
+                {#span_ele.text('')#}
+                $.get('{{ url_for('articles.delete') }}', {aid: aid}, function (data) {
+                    {#console.log(data);#}
+                    if (data.code == 200) {
+                        div_ele.css({
+                            "display": "none"
+                        });
+                    }
+                })
+            })
+            $('#title1').blur(function () {
+                var title = $(this).val();
+                var span_ele = $(this).next('span');
+                // 验证title是否为空
+                if(title.length==0){
+                    span_ele.css({"color": "#e33535", "font-size": "14px", "font-weight":"bold"});
+                    span_ele.text('The title should not be empty!')
+                }
+            })
+            $('#article_content1').blur(function () {
+                var content = $(this).val();
+                var span_ele = $(this).next('span');
+                // 验证content是否为空
+                if(content.length==0){
+                    span_ele.css({"color": "#e33535", "font-size": "14px", "font-weight":"bold"});
+                    span_ele.text('The content should not be empty!')
+                }
+            })
+        })
+        function isEmpty() {
+        // 判断是否每一项都填写
+        if($("#title1").val()==""||$("#article_content1").val()=="")
+        {
+            alert("The title and content should not be empty!");
+            return false;
+        }
+        return true;
+    }
+        </script>
+    {% endblock %}
+</head>
+<body id="admin">
+<nav class="navbar navbar-default navbar-fixed-top" id="nav1" role="navigation">
+    <div class="container-fluid">
+    <div class="navbar-header">
+        <a class="navbar-brand" href="#">Blog</a>
+    </div>
+    <div>
+        <ul class="nav navbar-nav">
+            <li><a href="{{ url_for('articles.home') }}">Home</a></li>
+             <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                    Classification<b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                    <li><a href="{{ url_for('articles.cs') }}">CS learning experience</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ url_for('articles.rn') }}">Reading notes</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ url_for('articles.ho') }}">Hobbies</a></li>
+                    <li class="divider"></li>
+                    <li><a href="{{ url_for('articles.dl') }}">Daily life</a></li>
+                </ul>
+            </li>
+            <li><a href="{{ url_for('user.aboutme') }}">About me</a></li>
+            <li><a href="{{ url_for('user.message') }}">Message Board</a></li>
+        </ul>
+    </div>
+
+        <ul class="nav navbar-nav navbar-right">
+                <li><a href="change">Modify personal information</a></li>
+                <li><a href="{{ url_for('user.logout')}}">Exit</a></li>
+        </ul>
+    </div>
+</nav>
+    <div class="container" id="background1">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="col-md-4"></div>
+                <div class="col-md-8" id="head_word1">
+                    <H1>  My Blog </H1>
+                </div>
+            </div>
+        </div>
+</div>
+{% endblock %}
+<div class="lace_hd_ft"></div>
+{% block p1 %}
+    {%  for message in get_flashed_messages() %}
+        {% if message=='Successfully delete the blog!' %}
+            <div id ='container7' style="margin-left: 430px">
+                <p id="message4">{{ message }}</p>
+            </div>
+        {% endif %}
+    {% endfor %}
+<article style="width: 1200px">
+<div class="blog">
+    <h3><p>Myblog</p></h3>
+        {% endblock %}
+{% block middle %}
+    {%  for article in pagination.items %}
+        <div class="bloglist" id="divblog">
+            <h2><a href="{{ url_for('articles.detail') }}?aid={{ article.article_id }}">{{ article.title }}</a></h2>
+            <p class="datetime">Release time:{{ article.time }}</p>
+            <div id="p3">{{ article.content[0:800]|safe}}</div>
+            <p class="read"><a href="{{ url_for('articles.delete') }}?aid={{ article.article_id }}" class="btn-3d purple" >Delete</a></p>
+            <div style="display: none" id="input">{{ article.article_id }}</div>
+        </div>
+    {% endfor %}
+    <nav aria-label="Page navigation" class="col-md-4 col-md-offset-4" style="height: 65px">
+        <ul class="pagination">
+            <li {% if not pagination.has_prev %}class="disabled"{% endif %}><a href="{{ url_for('user.center') }}?page={{ pagination.prev_num }}">&laquo;</a></li>
+            {% for page_num in range(1, pagination.pages + 1 )%}
+                <li {% if pagination.page == page_num %} class="active"{% endif %}><a href="{{ url_for('user.center') }}?page={{ page_num }}">{{ page_num }}</a></li>
+            {% endfor %}
+            <li {% if not pagination.has_next %}class="disabled"{% endif %}><a href="{{ url_for('user.center') }}?page={{ pagination.next_num }}">&raquo;</a></li>
+        </ul><br>
+    </nav>
+    {% endblock %}
+{% block add %}
+    <div id="add_blog">
+        <p style="font-size: 20px; font-weight: bold;padding-left: 0px;padding-top:0px;margin-right:500px;color: rgba(31,31,31,0.89)">Publish a new blog:</p>
+        <form action="{{ url_for('articles.publish') }}" method="post">
+            <p><label style="padding-top: 7px;font-size:13px;margin-right: 400px">Blog title</label>
+            <p><input type="text" class="form-control" name="title" placeholder="Please type in the title" id="title1"><span></span></p>
+            <p>
+                <label for="name" style="font-size:13px">Choose the blog type</label>
+		        <select class="form-control" name = 'type'>
+			        <option>CS learning experience</option>
+			        <option>Reading notes</option>
+			        <option>Hobbies</option>
+			        <option>Daily life</option>
+		        </select>
+            </p>
+            <label for="name" style="font-size:13px">Text</label>
+            <p>
+                <textarea style="height: 400px; width: 800px; padding: 10px; " name="article" id="article_content1" placeholder="Please enter text" ></textarea><span></span>
+            </p>
+            <div class="form-row button-login">
+                <button type="submit" class="btn btn-login" onclick="return isEmpty()" >Publish blog</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+{% block information %}
+
+</div>
+    <aside >
+    <div class="vcard" >
+    <img src="../static/img9.JPG" class="about">
+        <p id="info">My personal information:</p>
+      <p class="fn">Name: Xia Tianrui</p>
+      <p class="address">Region: Chengdu Sichuan</p>
+      <p class="role">School: SWJTU</p>
+      <p class="nickname">QQ number: 1085209787</p>
+      <p class="nickname">Email: {{ g.user.email }}</p>
+</div>
+</aside>
+</article>
+{% endblock %}
+</body>
+</html>

@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block search %}
+    <div id="search" style="margin-top: 8px; margin-left: 30px; width: 330px">
+    <form action="/search/1" method="post" name="searchform" id="searchform">
+    <input name="keyboard" id="keyboard" class="input_text" value="Enter keyword to search" style="color: rgb(153, 153, 153);" onfocus="if(value=='Enter keyword to search'){this.style.color='#000';value=''}" onblur="if(value==''){this.style.color='#999';value='Enter keyword to search'}" type="text">
+          <input name="show" value="title" type="hidden">
+          <input name="tempid" value="1" type="hidden">
+          <input name="tbname" value="news" type="hidden">
+          <input name="Submit" class="input_submit" value="Search" type="submit">
+        </form>
+    </div>
+{% endblock %}
+{% block middle %}
+<article id="article">
+  <aside class="l_box">
+      <div class="about_me">
+        <h2>About me</h2>
+        <ul>
+          <i><img src="../static/img9.JPG"></i>
+          <p><b>Xia Tianrui</b></p>
+            <p style="padding-bottom: 25px">Currently studying at Southwest Jiaotong University Leeds-joint school, and now a junior student majoring in computer since. My hobbies include watching movies, reading books, and watching tennis matches and so on. I would share my experiences about my studying, interest, and life in this blog and we could exchange our ideas. If you like the content I share, please give me a like and add it to your favorites!</p>
+        </ul>
+      </div>
+      <div class="fenlei" id = 'ul'>
+        <h2>Blog classification</h2>
+        <ul>
+          <li><a href="{{ url_for('articles.cs') }}">CS learning experience ({{ num1 }})>></a></li>
+          <li><a href="{{ url_for('articles.rn') }}">Reading notes ({{ num2 }})>></a></li>
+          <li><a href="{{ url_for('articles.ho') }}">Hobbies ({{ num3 }})>></a></li>
+          <li><a href="{{ url_for('articles.dl') }}">Daily life ({{ num4 }})>></a></li>
+        </ul>
+      </div>
+  </aside>
+ <main class="r_box">
+ {%  for message in get_flashed_messages() %}
+        {% if message=='Sorry, there is no search results found matching the keyword.' %}
+            <div id ='container6'>
+                <p id="message2">{{ message }}</p>
+            </div>
+        {% endif %}
+     {% if message=='Successfully logged in!' %}
+            <div id ='container7' >
+                <p id="message4">{{ message }}</p>
+            </div>
+        {% endif %}
+      {% if message=='Successfully logged out!' %}
+            <div id ='container7'>
+                <p id="message4">{{ message }}</p>
+            </div>
+        {% endif %}
+     {% if message=='Successfully published a blog!' %}
+            <div id ='container7'>
+                <p id="message4" >{{ message }}</p>
+            </div>
+        {% endif %}
+ {% endfor %}
+     {% for article in pagination.items %}
+     <li>
+      <h3 id="title"><a href="{{ url_for('articles.detail') }}?aid={{ article.article_id }}">{{ article.title }}</a></h3>
+         <p style="height: 30px; margin: 0 0 0 0;">Release time:{{ article.time }}</p>
+         <div id="p2">{{ article.content[0:300]|safe}}</div>
+
+    </li>
+     {% endfor %}
+  </main>
+</article>
+    <nav aria-label="Page navigation" class="col-md-4 col-md-offset-4">
+    <ul class="pagination">
+	<li {% if not pagination.has_prev %}class="disabled"{% endif %}><a href="{{ url_for('articles.home') }}?page={{ pagination.prev_num }}">&laquo;</a></li>
+        {% for page_num in range(1, pagination.pages + 1 )%}
+            <li {% if pagination.page == page_num %} class="active"{% endif %}><a href="{{ url_for('articles.home') }}?page={{ page_num }}">{{ page_num }}</a></li>
+        {% endfor %}
+	<li {% if not pagination.has_next %}class="disabled"{% endif %}><a href="{{ url_for('articles.home') }}?page={{ pagination.next_num }}">&raquo;</a></li>
+</ul><br>
+    </nav>
+{% endblock %}
